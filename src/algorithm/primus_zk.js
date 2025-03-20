@@ -1,20 +1,20 @@
 // load wasm module
-// Module = {};
-// Module_callAlgorithm = null;
-// Module.onRuntimeInitialized = async () => {
-//   console.log("Module onRuntimeInitialized");
-//   Module_callAlgorithm = Module.cwrap('callAlgorithm', 'string', ['string']);
-// };
-
-// support websocket
-global.WebSocket = require('ws');
-
-// load wasm module
+Module = {};
 Module_callAlgorithm = null;
-const Module = require("./client_plugin.js");
 Module.onRuntimeInitialized = async () => {
+  console.log("Module onRuntimeInitialized");
   Module_callAlgorithm = Module.cwrap('callAlgorithm', 'string', ['string']);
-}
+};
+
+// // support websocket
+// global.WebSocket = require('ws');
+
+// // load wasm module
+// Module_callAlgorithm = null;
+// const Module = require("./client_plugin.js");
+// Module.onRuntimeInitialized = async () => {
+//   Module_callAlgorithm = Module.cwrap('callAlgorithm', 'string', ['string']);
+// }
 
 const callAlgorithm = async (params) => {
   console.log("callAlgorithm111 params=", params, Module_callAlgorithm);
