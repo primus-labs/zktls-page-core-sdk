@@ -110,7 +110,7 @@ export default defineConfig({
 
 ### Index html
 
-You need to import two js files in your offscreen html.
+You need to import two js files in your index html.
 
 ```html
 <html>
