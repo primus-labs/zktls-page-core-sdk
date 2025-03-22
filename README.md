@@ -17,7 +17,7 @@ Here's a simplified flow of how the Primus Page Core SDK works on your project:
 
 **1. Create Project:** Create a project on the [Primus Developer Hub](https://dev.primuslabs.xyz/) to obtain a paired appID and appSecret, then configure them in your project.
 
-**2. Configure Verification Parameters:** Ensure that two key parameters, including the request parameters and response data paths, are configured correctly. Refer to the [simple example](#Test Example) for guidance.
+**2. Configure Verification Parameters:** Ensure that two key parameters, including the request parameters and response data paths, are configured correctly. Refer to the Test Example) for guidance.
 
 **3. Execute zkTLS Protocol:** Invoke the zkTLS protocol to initiate the data verification process.
 
