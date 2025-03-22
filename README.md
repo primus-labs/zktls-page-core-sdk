@@ -130,7 +130,7 @@ This Test Example guide will walk you through the fundamental steps to integrate
 ### Implementation
 
 ```javascript
-const { PrimusPageCoreTLS } = require("@primuslabs/zktls-page-core-sdk");
+import { PrimusPageCoreTLS } from "@primuslabs/zktls-page-core-sdk"
 
 async function primusProofTest() {
     // Initialize parameters, the init function is recommended to be called when the program is initialized.
@@ -220,7 +220,7 @@ generateRequest.setAdditionParams(additionParams);
 Extension does not require appSecret parameter to initialize SDK.
 
 ```javascript
-const { PrimusPageCoreTLS } = require("@primuslabs/zktls-page-core-sdk");
+import { PrimusPageCoreTLS } from "@primuslabs/zktls-page-core-sdk"
 
 async function primusProofTest() {
     // Initialize parameters, the init function is recommended to be called when the program is initialized.
