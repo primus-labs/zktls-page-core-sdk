@@ -17,7 +17,7 @@ Here's a simplified flow of how the Primus Page Core SDK works on your project:
 
 **1. Create Project:** Create a project on the [Primus Developer Hub](https://dev.primuslabs.xyz/) to obtain a paired appID and appSecret, then configure them in your project.
 
-**2. Configure Verification Parameters:** Ensure that two key parameters, including the request parameters and response data paths, are configured correctly. Refer to the [simple example](https://docs.primuslabs.xyz/data-verification/core-sdk/simpleexample) for guidance.
+**2. Configure Verification Parameters:** Ensure that two key parameters, including the request parameters and response data paths, are configured correctly. Refer to the [simple example](#Test Example) for guidance.
 
 **3. Execute zkTLS Protocol:** Invoke the zkTLS protocol to initiate the data verification process.
 
@@ -27,7 +27,7 @@ Here's a simplified flow of how the Primus Page Core SDK works on your project:
 
 ## Demo
 
-This is a [Page demo]() we developed using Primus Page Core SDK.
+This is a [Page demo](https://github.com/primus-labs/zktls-demo/tree/main/page-core-sdk-example) we developed using Primus Page Core SDK.
 
 ## Installation
 
@@ -38,13 +38,13 @@ Open your terminal and navigate to your project directory. Then run one of the f
 - Using npm:
 
 ```text
-npm install --save @primuslabs/zktls-ext-core-sdk
+npm install --save @primuslabs/zktls-page-core-sdk
 ```
 
 - Using yarn:
 
 ```text
-yarn add --save @primuslabs/zktls-ext-core-sdk
+yarn add --save @primuslabs/zktls-page-core-sdk
 ```
 
 ### Importing the SDK
@@ -52,57 +52,63 @@ yarn add --save @primuslabs/zktls-ext-core-sdk
 After installation, you can import the SDK in your JavaScript or TypeScript files. Here's how:
 
 ```javascript
-const { PrimusExtCoreTLS } = require("@primuslabs/zktls-ext-core-sdk");
+import { PrimusPageCoreTLS } from "@primuslabs/zktls-page-core-sdk"
 ```
 
-## Extension Config
+## Project Config
 
-Because our algorithm wasm library and wasm js encapsulation use SharedArrayBuffer, it must be run in the [extension offscreen html](https://developer.chrome.com/docs/extensions/reference/api/offscreen).
+The Primus Page Core SDK algorithm must be run in a separate js tag and must support SharedArrayBuffer, so the following configuration is required.
 
-### webpack.config.js
+### vite.config.js
 
-When the extension is compiled, copy the 4 files directly to the extension build directory. `webpack.config.js` needs to add the following configuration. You can refer to [demo webpack.config.js](https://github.com/primus-labs/zktls-demo/blob/main/extension-core-sdk-example/webpack.config.js).
+When the page is compiled, copy the 4 files directly to the extension build directory. `vite.config.js` needs to add the following configuration. You can refer to [demo vite.config.js](https://github.com/primus-labs/zktls-demo/blob/main/page-core-sdk-example/vite.config.js).
 
 ```javascript
-new CopyWebpackPlugin({
-      patterns: [
+export default defineConfig({
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
         {
-          from: 'node_modules/@primuslabs/zktls-ext-core-sdk/dist/algorithm/client_plugin.wasm',
-          to: path.join(__dirname, 'build'),
-          force: true,
+          src: 'node_modules/@primuslabs/zktls-page-core-sdk/dist/algorithm/client_plugin.wasm',
+          dest: './'
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
-          from: 'node_modules/@primuslabs/zktls-ext-core-sdk/dist/algorithm/client_plugin.worker.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
+          src: 'node_modules/@primuslabs/zktls-page-core-sdk/dist/algorithm/client_plugin.worker.js',
+          dest: './'
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
-          from: 'node_modules/@primuslabs/zktls-ext-core-sdk/dist/algorithm/client_plugin.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
+          src: 'node_modules/@primuslabs/zktls-page-core-sdk/dist/algorithm/client_plugin.js',
+          dest: './'
         },
-      ],
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
         {
-          from: 'node_modules/@primuslabs/zktls-ext-core-sdk/dist/algorithm/primus_zk.js',
-          to: path.join(__dirname, 'build'),
-          force: true,
-        },
-      ],
-    }),
+          src: 'node_modules/@primuslabs/zktls-page-core-sdk/dist/algorithm/primus_zk.js',
+          dest: './'
+        }
+      ]
+    })
+  ],
+  server: {
+    headers: { // to support SharedArrayBuffer
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp'
+    }
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+        // Enable esbuild polyfill plugins
+        plugins: [
+            NodeModulesPolyfillPlugin()
+        ]
+    },
+    include: ['react', 'react-dom'],
+    force: true,
+  },
+})
+
 ```
 
-### offscreen html
+### Index html
 
 You need to import two js files in your offscreen html.
 
@@ -115,35 +121,22 @@ You need to import two js files in your offscreen html.
 </html>
 ```
 
-### extension manifest.json
-
-The extension manifest.json file may add the following configuration:
-
-```json
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
-  },
-  "permissions": [
-    "offscreen"
-  ],
-```
-
 ## Test Example
 
-The appSecret from Primus Developer Hub needs to sign the proof request parameters. For security reasons, appSecret cannot be configured on the extension side. The Test Example configures appSecret in the extension code to better illustrate the process.
+The appSecret from Primus Developer Hub needs to sign the proof request parameters. For security reasons, appSecret cannot be configured on the Page side. The Test Example configures appSecret in the Page code to better illustrate the process.
 
-This Test Example guide will walk you through the fundamental steps to integrate Primus's zkTLS Extension Core SDK and complete a basic data verification process through your Extension. You can learn about the integration process through this simple [demo](https://github.com/primus-labs/zktls-demo/blob/main/extension-core-sdk-example/src/pages/Background/index.js).
+This Test Example guide will walk you through the fundamental steps to integrate Primus's zkTLS Page Core SDK and complete a basic data verification process through your Page. You can learn about the integration process through this simple [demo](https://github.com/primus-labs/zktls-demo/blob/main/page-core-sdk-example/src/testprimus.js).
 
 ### Implementation
 
 ```javascript
-const { PrimusExtCoreTLS } = require("@primuslabs/zktls-ext-core-sdk");
+const { PrimusPageCoreTLS } = require("@primuslabs/zktls-page-core-sdk");
 
 async function primusProofTest() {
     // Initialize parameters, the init function is recommended to be called when the program is initialized.
     const appId = "PRIMUS_APP_ID";
     const appSecret= "PRIMUS_APP_SECRET";
-    const zkTLS = new PrimusExtCoreTLS();
+    const zkTLS = new PrimusPageCoreTLS();
     const initResult = await zkTLS.init(appId, appSecret);
     console.log("primusProof initResult=", initResult);
 
@@ -222,17 +215,17 @@ const additionParams = JSON.stringify({
 generateRequest.setAdditionParams(additionParams);
 ```
 
-### Extension Implementation
+### Frontend Implementation
 
 Extension does not require appSecret parameter to initialize SDK.
 
 ```javascript
-const { PrimusExtCoreTLS } = require("@primuslabs/zktls-ext-core-sdk");
+const { PrimusPageCoreTLS } = require("@primuslabs/zktls-page-core-sdk");
 
 async function primusProofTest() {
     // Initialize parameters, the init function is recommended to be called when the program is initialized.
     const appId = "PRIMUS_APP_ID";
-    const zkTLS = new PrimusExtCoreTLS();
+    const zkTLS = new PrimusPageCoreTLS();
     const initResult = await zkTLS.init(appId);
     console.log("primusProof initResult=", initResult);
 
@@ -289,7 +282,7 @@ The server is mainly responsible for obtaining the attestation parameters genera
 ```javascript
 const express = require("express");
 const cors = require("cors");
-const { PrimusExtCoreTLS } = require("@primuslabs/zktls-ext-core-sdk");
+const { PrimusPageCoreTLS } = require("@primuslabs/zktls-page-core-sdk");
 
 const app = express();
 const port = YOUR_PORT;
@@ -303,7 +296,7 @@ app.get("/primus/sign", async (req, res) => {
   const appSecret = "YOUR_SECRET";
 
   // Create a PrimusZKTLS object.
-  const zkTLS = new PrimusExtCoreTLS();
+  const zkTLS = new PrimusPageCoreTLS();
 
   // Set appId and appSecret through the initialization function.
   await zkTLS.init(appId, appSecret);
