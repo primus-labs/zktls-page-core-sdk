@@ -22,9 +22,9 @@ export class AlgorithmUrls {
         let ws = new WebSocket(`wss://${item.algoProxyDomain}/algoproxyV3`);
         ws.onopen = async function () {
           if (!isInited) {
-            that.primusMpcUrl = `wss://${item.algorithmDomain}/algorithmV3`;
-            that.primusProxyUrl = `wss://${item.algorithmDomain}/algorithm-proxyV3`;
-            that.proxyUrl = `wss://${item.algoProxyDomain}/algoproxyV3`;
+            that.primusMpcUrl = `wss://${item.algorithmDomain}/algorithm`;
+            that.primusProxyUrl = `wss://${item.algorithmDomain}/algorithm-proxy`;
+            that.proxyUrl = `wss://${item.algoProxyDomain}/algoproxy`;
             isInited = true;
           }
           ws.close();
